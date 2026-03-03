@@ -1,7 +1,7 @@
 /* ─── State ───────────────────────────────────────────────────── */
 let expenses = []; // [{date, description, category, billNumber, amount}]
 let logoDataUrl = null;
-let zoomLevel = 0.72;
+let zoomLevel = 1;
 
 const CATEGORIES = [
   'Business Meals',
@@ -399,59 +399,19 @@ function validateForm() {
 function downloadPDF() {
   if (!validateForm()) return;
 
-  const employeeName = document.getElementById('employeeName').value.trim();
-  const period = document.getElementById('expensePeriod').value;
-  const safeName = employeeName.replace(/\s+/g, '_');
-  const safePeriod = period ? '_' + period : '';
-  const filename = `Expense_Reimbursement_${safeName}${safePeriod}.pdf`;
+  const btn = document.querySelector('.btn-primary');
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = 'Printing\u2026';
 
-  // position:fixed puts the element in the viewport regardless of page scroll
-  // and is never clipped by body/html overflow:hidden — the most reliable spot
-  // for html2canvas to find and fully render the content.
-  const el = document.createElement('div');
-  el.style.cssText = 'position:fixed;top:0;left:0;width:794px;background:#fff;z-index:9999;';
-  el.innerHTML = buildPDFHTML();
-  document.body.appendChild(el);
+  const reset = () => {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+  };
 
-  // Reading scrollHeight forces a synchronous reflow so dimensions are ready
-  const contentHeight = el.scrollHeight;
-
-  showToast('Generating PDF...');
-
-  html2canvas(el, {
-    scale: 2,
-    useCORS: true,
-    logging: false,
-    width: 794,
-    height: contentHeight,
-    windowWidth: 794,
-    windowHeight: contentHeight,
-  }).then(canvas => {
-    const { jsPDF } = window.jspdf;
-    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-
-    // 794 CSS px maps to 210 mm (A4 width); derive proportional height
-    const A4_W = 210;
-    const A4_H = 297;
-    const imgW = A4_W;
-    const imgH = (canvas.height / canvas.width) * A4_W;
-
-    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-    const pages = Math.ceil(imgH / A4_H);
-    for (let i = 0; i < pages; i++) {
-      if (i > 0) pdf.addPage();
-      // Shift the image up by one page height per iteration so each page
-      // shows the correct slice of the full-height canvas image
-      pdf.addImage(imgData, 'JPEG', 0, -(i * A4_H), imgW, imgH);
-    }
-
-    pdf.save(filename);
-    el.remove();
-    showToast('PDF downloaded!');
-  }).catch(() => {
-    el.remove();
-    showToast('PDF generation failed. Please try again.');
-  });
+  window.onafterprint = function () { window.onafterprint = null; reset(); };
+  window.print();
+  setTimeout(reset, 1000);
 }
 
 /* ─── Preload Logo ───────────────────────────────────────────── */
@@ -468,10 +428,9 @@ function loadLogo() {
 
 /* ─── Init ───────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  loadLogo().then(fitZoomToPanel);
+  loadLogo().then(updatePreview);
   loadState();
   if (expenses.length === 0) {
     addExpense();
   }
-  window.addEventListener('resize', fitZoomToPanel);
 });
