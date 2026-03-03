@@ -1,8 +1,8 @@
 /* ─── Design Tokens ──────────────────────────────────────────── */
 :root {
-  --accent: #007AFF;
-  --accent-hover: #0066CC;
-  --accent-light: rgba(0,122,255,0.1);
+  --accent: #ffc938;
+  --accent-hover: #e6b200;
+  --accent-light: rgba(255,201,56,0.1);
   --surface: #FFFFFF;
   --surface-2: #F2F2F7;
   --border: rgba(60,60,67,0.12);
@@ -23,13 +23,17 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   background: var(--surface-2);
   color: var(--text-1);
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   overflow: hidden;
 }
 
 /* ─── Header ─────────────────────────────────────────────────── */
 .site-header {
-  position: relative;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
   z-index: 100;
   background: rgba(242,242,247,0.95);
   backdrop-filter: saturate(180%) blur(20px);
@@ -68,24 +72,28 @@ body {
 
 /* ─── Split Layout ───────────────────────────────────────────── */
 .app-layout {
+  flex: 1;
   display: flex;
-  height: calc(100vh - 56px);
   overflow: hidden;
 }
 
 /* ─── Builder Panel (left) ───────────────────────────────────── */
 .builder-panel {
-  flex: 1;
-  min-width: 0;
+  width: 400px;
+  min-width: 360px;
+  flex-shrink: 0;
+  height: 100%;
   overflow-y: auto;
   padding: 20px 20px 60px;
   background: var(--surface-2);
   border-right: 1px solid var(--border);
 }
+.builder-panel::-webkit-scrollbar { width: 4px; }
+.builder-panel::-webkit-scrollbar-thumb { background: rgba(60,60,67,.2); border-radius: 2px; }
 
 /* ─── Preview Panel (right) ──────────────────────────────────── */
 .preview-panel {
-  flex: 0 0 810px;
+  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -162,7 +170,7 @@ body {
   gap: 7px;
   padding: 9px 20px;
   background: var(--accent);
-  color: #fff;
+  color: var(--text-1);
   border: none;
   border-radius: 980px;
   font-size: 0.875rem;
@@ -288,7 +296,7 @@ body {
 .form-group input:focus,
 .form-group select:focus {
   border-color: var(--accent);
-  background: rgba(0,122,255,0.05);
+  background: var(--accent-light);
 }
 .form-group input::placeholder { color: var(--text-3); }
 
@@ -333,7 +341,7 @@ body {
 .expense-table input:focus,
 .expense-table select:focus {
   border-color: var(--accent);
-  background: rgba(0,122,255,0.05);
+  background: var(--accent-light);
 }
 .expense-table .col-date  { width: 125px; }
 .expense-table .col-desc  { min-width: 160px; }
@@ -464,15 +472,6 @@ body {
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 1280px) {
-  .app-layout { flex-direction: column; height: auto; overflow: visible; }
-  body { overflow: auto; }
-  .builder-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
-  .preview-panel { height: 680px; }
-}
 @media (max-width: 600px) {
-  .info-bar { flex-direction: column; }
-  .info-left, .info-right { flex: unset; width: 100%; }
   .header-inner { padding: 0 16px; }
-  .builder-panel { padding: 16px 16px 40px; }
 }

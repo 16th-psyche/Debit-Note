@@ -2,9 +2,6 @@
 
 A lightweight, browser-based expense reimbursement form builder for QuantumLeap team members. Fill in your expense details and download a print-ready PDF — no server, no installation, no login required.
 
-## Access here:
-https://16th-psyche.github.io/Debit-Note/
-
 ## Features
 
 - **Live A4 preview** — see exactly how the PDF will look as you type
